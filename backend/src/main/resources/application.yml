@@ -1,0 +1,39 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size : 10MB
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+jwt:
+  secret: your_jwt_secret_key_here_it_should_be_at_least_256_bits_long
+  expiration: 86400000 # 24시간
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
+
+file:
+  upload-dir: ./uploads
