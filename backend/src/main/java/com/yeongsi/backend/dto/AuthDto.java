@@ -34,4 +34,14 @@ public class AuthDto {
         private String email;
         private String username;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserInfoResponse {
+        private String email;
+        private String username;
+        private String profileImageUrl;
+    }
 }

@@ -1,13 +1,36 @@
 import { Bell, ChevronDown, Menu, X } from "lucide-react";
 import React, { useEffect, useState, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { authApi } from "../api/auth";
+import axios from "axios";
 
 const Header = () => {
   const [isScrolled, setScrolled] = useState(false);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
   const dropdownRef = useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const fetchUserInfo = async () => {
+    try {
+      // 토큰 가져오기
+      const token = localStorage.getItem("token");
+      console.log("Current token:", token); // 토큰이 있는지 확인
+
+      // 요청 헤더에 토큰 포함
+      const response = await axios.get("http://127.0.0.1:8080/api/auth/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("User info response:", response.data); // 응답 데이터 확인
+      setUserInfo(response.data);
+    } catch (error) {
+      console.error("가져오기 실패", error);
+    }
+  };
 
   const isActive = (path) => {
     return location.pathname === path;
@@ -17,7 +40,13 @@ const Header = () => {
     const token = localStorage.getItem("token");
     return token !== null && token !== "undefined";
   };
-
+  useEffect(() => {
+    // 토큰이 있을 때만 사용자 정보 요청
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetchUserInfo();
+    }
+  }, []);
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 0) {
@@ -49,8 +78,13 @@ const Header = () => {
   }, [isMobileMenuOpen]);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.reload();
+    localStorage.clear();
+    navigate("/login");
+  };
+
+  // 실제로 로그아웃 할 때만 로그아웃
+  const handleLogoutClick = () => {
+    handleLogout();
   };
 
   return (
@@ -106,8 +140,14 @@ const Header = () => {
                   </button>
                   <div className="relative" ref={dropdownRef}>
                     <button onClick={() => setDropdownOpen(!isDropdownOpen)} className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 transition-colors">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
-                        <span className="text-white text-sm font-medium">YS</span>
+                      <div className="w-8 h-8 rounded-full overflow-hidden">
+                        {userInfo?.profileImageUrl ? (
+                          <img src={userInfo.profileImageUrl} alt="Profile" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
+                            <span className="text-white text-sm font-medium">{userInfo?.username ? userInfo.username.substring(0, 2).toUpperCase() : "YS"}</span>
+                          </div>
+                        )}
                       </div>
                       <ChevronDown className="h-4 w-4 text-gray-500" />
                     </button>
@@ -115,7 +155,7 @@ const Header = () => {
                     {isDropdownOpen && (
                       <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5">
                         <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setDropdownOpen(false)}>
-                          프로필
+                          {userInfo?.username ? userInfo.username : "YS"}
                         </Link>
                         <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setDropdownOpen(false)}>
                           설정
@@ -148,12 +188,18 @@ const Header = () => {
             <div className="flex items-center justify-between p-4 border-b">
               {isAuthenticated() && (
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
-                    <span className="text-white text-lg font-medium">YS</span>
+                  <div className="w-8 h-8 rounded-full overflow-hidden">
+                    {userInfo?.profileImageUrl ? (
+                      <img src={userInfo.profileImageUrl} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
+                        <span className="text-white text-sm font-medium">{userInfo?.username ? userInfo.username.substring(0, 2).toUpperCase() : "YS"}</span>
+                      </div>
+                    )}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">사용자 이름</p>
-                    <p className="text-xs text-gray-500">user@example.com</p>
+                    <p className="text-sm font-medium text-gray-900">{userInfo?.username || "사용자"}</p>
+                    <p className="text-xs text-gray-500">{userInfo?.email || ""}</p>
                   </div>
                 </div>
               )}

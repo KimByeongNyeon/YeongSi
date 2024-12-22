@@ -1,6 +1,5 @@
 package com.yeongsi.backend.domain;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -23,8 +23,12 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await dispatch(login(formData)).unwrap();
-      navigate("/dashboard");
+      const response = await dispatch(login(formData)).unwrap();
+      // 로그인 성공 시 localStorage에 직접 저장
+      localStorage.setItem("token", response.token);
+      localStorage.setItem("userEmail", response.email);
+      localStorage.setItem("username", response.username);
+      navigate("/");
     } catch (error) {
       console.error("Login failed:", error);
     }

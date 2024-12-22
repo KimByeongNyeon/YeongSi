@@ -4,9 +4,10 @@ import com.yeongsi.backend.config.JwtConfig;
 import com.yeongsi.backend.config.UserDetailsImpl;
 import com.yeongsi.backend.domain.User;
 import com.yeongsi.backend.dto.AuthDto;
+import com.yeongsi.backend.exception.CustomException;
+import com.yeongsi.backend.exception.ErrorCode;
 import com.yeongsi.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,7 @@ public class AuthService {
     @Transactional
     public AuthDto.AuthResponse signUp(AuthDto.SignupRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("이미 존재하는 이메일입니다.");
+            throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
         }
 
         User user = User.builder()
@@ -46,10 +47,10 @@ public class AuthService {
 
     public AuthDto.AuthResponse login(AuthDto.LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new BadCredentialsException("잘못된 이메일입니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_EMAIL));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new BadCredentialsException("잘못된 비밀번호입니다.");
+            throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
         String token = jwtConfig.generateToken(new UserDetailsImpl(user));
@@ -58,6 +59,17 @@ public class AuthService {
                 .token(token)
                 .email(user.getEmail())
                 .username(user.getUsername())
+                .build();
+    }
+
+    public AuthDto.UserInfoResponse getUserInfo(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_EMAIL));
+
+        return AuthDto.UserInfoResponse.builder()
+                .email(user.getEmail())
+                .username(user.getUsername())
+                .profileImageUrl(user.getProfileImageUrl())
                 .build();
     }
 }

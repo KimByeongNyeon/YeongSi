@@ -5,7 +5,7 @@ import axios from "axios";
 // 로그인 액션
 export const login = createAsyncThunk("auth/login", async ({ email, password }, { rejectWithValue }) => {
   try {
-    const response = await axios.post("/api/auth/login", { email, password });
+    const response = await axios.post("http://127.0.0.1:8080/api/auth/login", { email, password });
     // 토큰 저장
     localStorage.setItem("token", response.data.token);
     return response.data;
@@ -15,9 +15,10 @@ export const login = createAsyncThunk("auth/login", async ({ email, password }, 
 });
 
 // 회원가입 액션
-export const signup = createAsyncThunk("auth/signup", async ({ email, password, username, gender, profileImageUrl }, { dispatch }) => {
+// 회원가입 액션
+export const signup = createAsyncThunk("auth/signup", async ({ email, password, username, gender, profileImageUrl }, { dispatch, rejectWithValue }) => {
   try {
-    const response = await axios.post("/api/auth/signup", {
+    const response = await axios.post("http://127.0.0.1:8080/api/auth/signup", {
       email,
       password,
       username,
@@ -29,7 +30,16 @@ export const signup = createAsyncThunk("auth/signup", async ({ email, password, 
     localStorage.setItem("token", response.data.token);
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response.data);
+    if (error.response) {
+      // 서버가 응답을 반환한 경우
+      return rejectWithValue(error.response.data);
+    } else if (error.request) {
+      // 요청이 만들어졌으나 응답을 받지 못한 경우
+      return rejectWithValue({ message: "서버에서 응답을 받지 못했습니다." });
+    } else {
+      // 요청을 만드는 중에 오류가 발생한 경우
+      return rejectWithValue({ message: "요청 중 오류가 발생했습니다." });
+    }
   }
 });
 
@@ -61,10 +71,17 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.loading = false;
-        state.isAuthenticated = true;
-        state.user = action.payload;
+        console.log("Login success:", action.payload); // 응답 데이터 확인
+        // 로컬 스토리지에 저장
+        localStorage.setItem("token", action.payload.token);
+        localStorage.setItem("userEmail", action.payload.email);
+        localStorage.setItem("username", action.payload.username);
+        // 리덕스 상태 업데이트
         state.token = action.payload.token;
+        state.user = {
+          email: action.payload.email,
+          username: action.payload.username,
+        };
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
