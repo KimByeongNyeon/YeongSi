@@ -78,7 +78,7 @@ const SignUp = () => {
     }
     try {
       await dispatch(signup(formData)).unwrap();
-      navigate("/dashboard");
+      navigate("/article");
     } catch (error) {
       console.error("SignUp failed:", error);
     }

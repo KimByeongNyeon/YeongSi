@@ -48,7 +48,7 @@ const authSlice = createSlice({
   initialState: {
     user: null,
     token: localStorage.getItem("token"),
-    isAuthenticated: false,
+    isAuthenticated: !!localStorage.getItem("token"),
     loading: false,
     error: null,
   },
@@ -69,6 +69,7 @@ const authSlice = createSlice({
       .addCase(login.pending, (state) => {
         state.loading = true;
         state.error = null;
+        console.log("나오냐?? 1", state.isAuthenticated);
       })
       .addCase(login.fulfilled, (state, action) => {
         console.log("Login success:", action.payload); // 응답 데이터 확인
@@ -82,6 +83,8 @@ const authSlice = createSlice({
           email: action.payload.email,
           username: action.payload.username,
         };
+        state.isAuthenticated = true;
+        console.log("나오냐?2 :", state.isAuthenticated);
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;

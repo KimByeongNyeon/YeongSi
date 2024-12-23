@@ -7,6 +7,8 @@ import Header from "./components/Header";
 import { Provider } from "react-redux";
 import { persistor, store } from "./redux/store";
 import { PersistGate } from "redux-persist/integration/react";
+import ArticlePage from "./pages/ArticlePage";
+import CreateArticlePage from "./pages/CreateArticlePage";
 
 const App = () => {
   return (
@@ -14,11 +16,13 @@ const App = () => {
       <PersistGate loading={null} persistor={persistor}>
         <BrowserRouter>
           <Header />
-          <main>
+          <main className="mt-20">
             <Routes>
               <Route path="/" element={<MainPage />}></Route>
               <Route path="/login" element={<LoginPage />}></Route>
               <Route path="/signup" element={<SignUpPage />}></Route>
+              <Route path="/article" element={<ArticlePage />}></Route>
+              <Route path="/articles/create" element={<CreateArticlePage />}></Route>
             </Routes>
           </main>
         </BrowserRouter>

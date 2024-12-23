@@ -36,7 +36,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 인증이 필요없는 경로는 바로 통과
         if (request.getServletPath().contains("/api/auth/login") ||
-                request.getServletPath().contains("/api/auth/signup")) {
+                request.getServletPath().contains("/api/auth/signup") ||
+                request.getServletPath().contains("/uploads/**") ||
+                (request.getServletPath().contains("/api/articles") && request.getMethod().equals("GET")) ||
+        (request.getServletPath().contains("/api/articles/guest") && request.getMethod().equals("POST"))
+        ) {
             filterChain.doFilter(request, response);
             return;
         }

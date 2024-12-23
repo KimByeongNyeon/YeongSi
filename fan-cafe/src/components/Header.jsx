@@ -36,7 +36,7 @@ const Header = () => {
     return location.pathname === path;
   };
 
-  const isAuthenticated = () => {
+  const isAuthenticate = () => {
     const token = localStorage.getItem("token");
     return token !== null && token !== "undefined";
   };
@@ -88,7 +88,7 @@ const Header = () => {
   };
 
   return (
-    <header className="relative">
+    <header className="fixed top-0 w-full z-50 ...">
       <nav className={`fixed w-full z-40 transition-all duration-500 ${isScrolled ? "bg-white shadow-md" : "bg-white"}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex justify-between items-center h-16">
@@ -109,11 +109,11 @@ const Header = () => {
                 >
                   홈
                 </Link>
-                {isAuthenticated() ? (
+                <Link to="/article" className={`px-4 py-2 text-sm font-medium transition-colors ${isActive("/article") ? "text-blue-600" : "text-gray-600 hover:text-blue-600"}`}>
+                  게시글
+                </Link>
+                {isAuthenticate() ? (
                   <>
-                    <Link to="/dashboard" className={`px-4 py-2 text-sm font-medium transition-colors ${isActive("/dashboard") ? "text-blue-600" : "text-gray-600 hover:text-blue-600"}`}>
-                      대시보드
-                    </Link>
                     <Link to="/profile" className={`px-4 py-2 text-sm font-medium transition-colors ${isActive("/profile") ? "text-blue-600" : "text-gray-600 hover:text-blue-600"}`}>
                       프로필
                     </Link>
@@ -124,7 +124,7 @@ const Header = () => {
 
             {/* 우측 인증 메뉴 */}
             <div className="flex items-center space-x-4">
-              {!isAuthenticated() ? (
+              {!isAuthenticate() ? (
                 <div className="hidden md:flex items-center space-x-2">
                   <Link to="/login" className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
                     로그인
@@ -186,7 +186,7 @@ const Header = () => {
           <div className="fixed inset-y-0 right-0 max-w-xs w-full bg-white shadow-xl z-50 md:hidden transform transition-transform duration-300 ease-in-out">
             {/* 상단 헤더 */}
             <div className="flex items-center justify-between p-4 border-b">
-              {isAuthenticated() && (
+              {isAuthenticate() && (
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 rounded-full overflow-hidden">
                     {userInfo?.profileImageUrl ? (
@@ -218,7 +218,7 @@ const Header = () => {
                 홈
               </Link>
 
-              {isAuthenticated() ? (
+              {isAuthenticate() ? (
                 <>
                   {/* 알림 섹션 */}
                   <div className="px-4 py-3">

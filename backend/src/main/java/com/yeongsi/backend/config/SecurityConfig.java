@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -32,8 +33,15 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        //권한 필요 없는 경우
                         .requestMatchers("/api/auth/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/articles").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/articles/guest").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
+                        //권한 필요한 경우
+                        .requestMatchers(HttpMethod.POST, "/api/articles").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/articles").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/articles").authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -43,12 +51,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // configure 메소드 제거
-    // @Autowired
-    // public void configure(AuthenticationManagerBuilder auth) throws Exception {
-    //     auth.userDetailsService(customUserDetailsService)
-    //             .passwordEncoder(passwordEncoder());
-    // }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
