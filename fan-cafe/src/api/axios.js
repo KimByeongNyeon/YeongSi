@@ -1,11 +1,18 @@
 // api/axios.js
 import axios from "axios";
 
-// 기본 설정
-axios.defaults.baseURL = "http://localhost:8080";
+// 백엔드 API용 인스턴스
+export const authApi = axios.create({
+  baseURL: "http://localhost:8080",
+});
 
-// 요청 인터셉터
-axios.interceptors.request.use(
+// YouTube API용 인스턴스
+export const youtubeApi = axios.create({
+  baseURL: "https://www.googleapis.com/youtube/v3",
+});
+
+// 백엔드 API 인터셉터
+authApi.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -18,13 +25,11 @@ axios.interceptors.request.use(
   }
 );
 
-// 응답 인터셉터 - 401 자동 로그아웃 제거
-axios.interceptors.response.use(
+authApi.interceptors.response.use(
   (response) => response,
   (error) => {
-    // 401 에러가 발생해도 로그아웃 처리하지 않음
     return Promise.reject(error);
   }
 );
 
-export default axios;
+export default authApi;

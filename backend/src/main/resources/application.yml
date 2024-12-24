@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:file:./data/testdb
     username: sa
     password:
     driver-class-name: org.h2.Driver
@@ -25,7 +25,8 @@ server:
   port: 8080
   servlet:
     context-path:
-
+app:
+  host-url: http://localhost:8080
 jwt:
   # 이 값은 Base64로 인코딩된 32바이트 이상의 문자열이어야 합니다
   secret: QU3YmVzdHNlY3JldGtleWZvcmp3dHRva2VuZ2VuZXJhdGlvbmluMjAyNA==

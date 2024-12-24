@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         //권한 필요 없는 경우
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/files/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/articles").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/articles/guest").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
@@ -69,8 +70,11 @@ public class SecurityConfig {
         return source;
     }
 
+
     @Bean
     public static PasswordEncoder passwordEncoder() {  // static 추가
         return new BCryptPasswordEncoder();
     }
+
+
 }

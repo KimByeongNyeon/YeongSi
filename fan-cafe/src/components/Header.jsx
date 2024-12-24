@@ -3,6 +3,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { authApi } from "../api/auth";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../redux/features/authSlice";
 
 const Header = () => {
   const [isScrolled, setScrolled] = useState(false);
@@ -12,6 +14,9 @@ const Header = () => {
   const dropdownRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   const fetchUserInfo = async () => {
     try {
@@ -36,17 +41,11 @@ const Header = () => {
     return location.pathname === path;
   };
 
-  const isAuthenticate = () => {
-    const token = localStorage.getItem("token");
-    return token !== null && token !== "undefined";
-  };
   useEffect(() => {
-    // 토큰이 있을 때만 사용자 정보 요청
-    const token = localStorage.getItem("token");
-    if (token) {
+    if (isAuthenticated) {
       fetchUserInfo();
     }
-  }, []);
+  }, [isAuthenticated]);
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 0) {
@@ -78,7 +77,7 @@ const Header = () => {
   }, [isMobileMenuOpen]);
 
   const handleLogout = () => {
-    localStorage.clear();
+    dispatch(logout());
     navigate("/login");
   };
 
@@ -112,7 +111,7 @@ const Header = () => {
                 <Link to="/article" className={`px-4 py-2 text-sm font-medium transition-colors ${isActive("/article") ? "text-blue-600" : "text-gray-600 hover:text-blue-600"}`}>
                   게시글
                 </Link>
-                {isAuthenticate() ? (
+                {isAuthenticated ? (
                   <>
                     <Link to="/profile" className={`px-4 py-2 text-sm font-medium transition-colors ${isActive("/profile") ? "text-blue-600" : "text-gray-600 hover:text-blue-600"}`}>
                       프로필
@@ -124,7 +123,7 @@ const Header = () => {
 
             {/* 우측 인증 메뉴 */}
             <div className="flex items-center space-x-4">
-              {!isAuthenticate() ? (
+              {!isAuthenticated ? (
                 <div className="hidden md:flex items-center space-x-2">
                   <Link to="/login" className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
                     로그인
@@ -160,7 +159,7 @@ const Header = () => {
                         <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setDropdownOpen(false)}>
                           설정
                         </Link>
-                        <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <button onClick={handleLogoutClick} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                           로그아웃
                         </button>
                       </div>
@@ -186,7 +185,7 @@ const Header = () => {
           <div className="fixed inset-y-0 right-0 max-w-xs w-full bg-white shadow-xl z-50 md:hidden transform transition-transform duration-300 ease-in-out">
             {/* 상단 헤더 */}
             <div className="flex items-center justify-between p-4 border-b">
-              {isAuthenticate() && (
+              {isAuthenticated && (
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 rounded-full overflow-hidden">
                     {userInfo?.profileImageUrl ? (
@@ -218,7 +217,7 @@ const Header = () => {
                 홈
               </Link>
 
-              {isAuthenticate() ? (
+              {isAuthenticated ? (
                 <>
                   {/* 알림 섹션 */}
                   <div className="px-4 py-3">

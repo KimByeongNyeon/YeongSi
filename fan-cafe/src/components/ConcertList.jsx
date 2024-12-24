@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import VideoCard from "./VideoCard";
-import axios from "axios";
 import VideoModal from "./VideoModal";
+import { youtubeApi } from "../api/axios";
 
 const ConcertList = () => {
   const [videos, setVideos] = useState([]);
@@ -16,7 +16,7 @@ const ConcertList = () => {
     const fetchData = async () => {
       try {
         // 1. 검색 으로 동영상 데이터 뽑기
-        const response = await axios.get(`${API_URL}/search`, {
+        const response = await youtubeApi.get(`${API_URL}/search`, {
           params: {
             part: "snippet",
             maxResults: 25,
@@ -29,7 +29,7 @@ const ConcertList = () => {
 
         const videoIds = response.data.items.map((item) => item.id.videoId);
 
-        const detailResponse = await axios.get(`${API_URL}/videos`, {
+        const detailResponse = await youtubeApi.get(`${API_URL}/videos`, {
           params: {
             part: "statistics,snippet",
             id: videoIds.join(","),

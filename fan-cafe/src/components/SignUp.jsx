@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { signup } from "../redux/features/authSlice";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const SignUp = () => {
   const fileInputRef = useRef();
@@ -63,6 +64,7 @@ const SignUp = () => {
         ...prev,
         profileImageUrl: response.data.url,
       }));
+      console.log(response.data);
     } catch (error) {
       console.error("이미지 업로드 실패", error);
     } finally {

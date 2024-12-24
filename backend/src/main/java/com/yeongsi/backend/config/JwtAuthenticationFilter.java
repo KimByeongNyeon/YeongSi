@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtConfig jwtConfig;
     private final UserDetailsService userDetailsService;
-
+    private final AntPathMatcher antPathMatcher = new AntPathMatcher();
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -37,7 +38,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 인증이 필요없는 경로는 바로 통과
         if (request.getServletPath().contains("/api/auth/login") ||
                 request.getServletPath().contains("/api/auth/signup") ||
-                request.getServletPath().contains("/uploads/**") ||
+                antPathMatcher.match("/api/files/**", request.getServletPath()) ||
+                antPathMatcher.match("/uploads/**", request.getServletPath()) ||
                 (request.getServletPath().contains("/api/articles") && request.getMethod().equals("GET")) ||
         (request.getServletPath().contains("/api/articles/guest") && request.getMethod().equals("POST"))
         ) {
