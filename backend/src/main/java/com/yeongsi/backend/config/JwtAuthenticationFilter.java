@@ -40,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 request.getServletPath().contains("/api/auth/signup") ||
                 antPathMatcher.match("/api/files/**", request.getServletPath()) ||
                 antPathMatcher.match("/uploads/**", request.getServletPath()) ||
-                (request.getServletPath().contains("/api/articles") && request.getMethod().equals("GET")) ||
+                antPathMatcher.match("/api/articles/**", request.getServletPath()) && request.getMethod().equals("GET") ||
         (request.getServletPath().contains("/api/articles/guest") && request.getMethod().equals("POST"))
         ) {
             filterChain.doFilter(request, response);

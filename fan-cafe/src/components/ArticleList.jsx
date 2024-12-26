@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const ArticleList = () => {
@@ -67,7 +67,9 @@ const ArticleList = () => {
 
             {/* 게시글 내용 */}
             <div className="p-4">
-              <h2 className="text-xl font-semibold mb-2">{article.title}</h2>
+              <Link to={`/articles/${article.id}`}>
+                <h2 className="text-xl font-semibold mb-2">{article.title}</h2>
+              </Link>
               <p className="text-gray-700">{article.content}</p>
             </div>
 

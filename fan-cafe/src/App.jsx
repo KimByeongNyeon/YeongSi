@@ -9,6 +9,7 @@ import { persistor, store } from "./redux/store";
 import { PersistGate } from "redux-persist/integration/react";
 import ArticlePage from "./pages/ArticlePage";
 import CreateArticlePage from "./pages/CreateArticlePage";
+import ArticleDetailPage from "./pages/ArticleDetailPage";
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
               <Route path="/signup" element={<SignUpPage />}></Route>
               <Route path="/article" element={<ArticlePage />}></Route>
               <Route path="/articles/create" element={<CreateArticlePage />}></Route>
+              <Route path="/articles/:id" element={<ArticleDetailPage />}></Route>
             </Routes>
           </main>
         </BrowserRouter>

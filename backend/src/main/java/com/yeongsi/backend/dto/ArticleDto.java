@@ -24,6 +24,7 @@ public class ArticleDto {
         private Long id;
         private String title;
         private String content;
+        private String authorEmail;
         private String authorName;
         private String authorProfile;
         private boolean isMemberPost;
@@ -35,6 +36,7 @@ public class ArticleDto {
         public static Response fromEntity(Article article) {
             return Response.builder()
                     .id(article.getId())
+                    .authorEmail(article.isWrittenByMember() ? article.getAuthor().getEmail() : "")
                     .title(article.getTitle())
                     .content(article.getContent())
                     .authorName(article.isWrittenByMember() ?

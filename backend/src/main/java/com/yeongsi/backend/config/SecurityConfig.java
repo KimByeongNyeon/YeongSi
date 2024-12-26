@@ -36,7 +36,7 @@ public class SecurityConfig {
                         //권한 필요 없는 경우
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/files/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/articles").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/articles/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/articles/guest").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         //권한 필요한 경우

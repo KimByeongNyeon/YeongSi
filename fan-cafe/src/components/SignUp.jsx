@@ -54,7 +54,7 @@ const SignUp = () => {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await axios.post("/api/files/upload", formData, {
+      const response = await axios.post("http://127.0.0.1:8080/api/files/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
